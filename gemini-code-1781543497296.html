@@ -14,7 +14,10 @@
         // 初始化 LIFF，請將下面的 XXXXX-XXXXX 替換成您的 LIFF ID
         liff.init({ liffId: "2010400798-bwky55Rb" })
             .then(() => {
+                // 增加這行測試，強制檢查是否已初始化成功
+                console.log("LIFF initialized");
                 // 檢查使用者是否已經在 LINE 中登入
+                
                 if (!liff.isLoggedIn()) {
                     // 若未登入，強制跳出 LINE 登入畫面
                     liff.login();

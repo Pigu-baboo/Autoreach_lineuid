@@ -23,6 +23,7 @@
                     liff.getProfile()
                         .then(profile => {
                             const userUID = profile.userId; // 這就是您朝思暮想的 LINE UID！
+                            alert("抓到 UID: " + userUID); // 測試 2：是否抓到 UID
 
                             // 您的 Microsoft Bookings 原始預約網址
                             const bookingsBaseUrl = "https://outlook.office.com/book/W3_DrCHL@femh.org.tw/";

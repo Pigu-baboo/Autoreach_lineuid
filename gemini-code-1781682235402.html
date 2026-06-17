@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>預約系統入口</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body style="padding: 50px; text-align: center;">
+    <h2 id="msg">正在連接 LINE...</h2>
+    <button id="btn" style="padding: 15px 30px; font-size: 18px; display: none;" onclick="go()">進入預約系統</button>
+
+    <script>
+        let finalUrl = "";
+        liff.init({ liffId: "2010400798-bwky55Rb" })
+            .then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    liff.getProfile().then(profile => {
+                        document.getElementById('msg').innerText = "歡迎，準備好了！";
+                        finalUrl = "https://outlook.office.com/book/W3_DrCHL@femh.org.tw/?84f4ca14-6197-40ef-a353-5ff99dfc118b=" + profile.userId;
+                        const btn = document.getElementById('btn');
+                        btn.style.display = "inline-block"; // 顯示按鈕
+                    }).catch(e => document.getElementById('msg').innerText = "錯誤: " + e);
+                }
+            });
+
+        function go() {
+            window.location.href = finalUrl;
+        }
+    </script>
+</body>
+</html>

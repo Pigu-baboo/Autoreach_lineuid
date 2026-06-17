@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>醫院預約排程系統</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        #booking-frame { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+    <iframe id="booking-frame" src=""></iframe>
+
+    <script>
+        liff.init({ liffId: "2010400798-bwky55Rb" })
+            .then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    liff.getProfile().then(profile => {
+                        const userUID = profile.userId;
+                        
+                        // 您的 Microsoft Bookings 原始網址
+                        const bookingsBaseUrl = "https://outlook.office.com/book/W3_DrCHL@femh.org.tw/";
+                        
+                        // 將 UID 作為參數帶入 (使用您的欄位 ID)
+                        const finalBookingUrl = `${bookingsBaseUrl}?84f4ca14-6197-40ef-a353-5ff99dfc118b=${userUID}`;
+                        
+                        // 讓 iframe 載入
+                        const iframe = document.getElementById('booking-frame');
+                        iframe.src = finalBookingUrl;
+
+                        // 嘗試注入 CSS 隱藏欄位 (若遇到跨網域限制會由 catch 捕捉，不影響跳轉)
+                        iframe.onload = function() {
+                            try {
+                                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                                const style = iframeDocument.createElement('style');
+                                // 隱藏指定 ID 的欄位
+                                style.innerHTML = `
+                                    #84f4ca14-6197-40ef-a353-5ff99dfc118b, 
+                                    div[id*="84f4ca14"] { 
+                                        display: none !important; 
+                                    }
+                                `;
+                                iframeDocument.head.appendChild(style);
+                            } catch (e) {
+                                console.log("欄位已預填，CSS 隱藏功能受限於跨網域政策");
+                            }
+                        };
+                    });
+                }
+            })
+            .catch((err) => { console.error("LIFF 初始化錯誤:", err); });
+    </script>
+</body>
+</html>

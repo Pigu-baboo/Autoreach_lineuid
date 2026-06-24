@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>正在前往預約系統...</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f9f9f9;
+            color: #333; 
+        }
+        .loader { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #06C755; /* LINE 綠 */
+            border-radius: 50%; 
+            width: 35px; 
+            height: 35px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        .container { 
+            text-align: center; 
+            padding: 20px;
+        }
+        h2 { font-size: 1.2rem; margin-bottom: 8px; color: #222; }
+        p { font-size: 0.9rem; color: #666; margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h2>正在連接 LINE 帳號...</h2>
+        <p>請稍候，即將為您導向預約頁面</p>
+    </div>
+
+    <script>
+        // 設定資料（已帶入正式參數）
+        const MY_LIFF_ID = "2010400798-bwky55Rb"; 
+        const BASE_BOOKING_URL = "https://outlook.office.com/book/W3_DrCHL@femh.org.tw/?ismsaljsauthenabled"; 
+        const CUSTOM_FIELD_ID = "84f4ca14-6197-40ef-a353-5ff99dfc118b";
+
+        function initializeLiff() {
+            // 直接初始化 LIFF
+            liff.init({ liffId: MY_LIFF_ID })
+                .then(() => {
+                    // 省略登入驗證，直接擷取個人資料
+                    liff.getProfile()
+                        .then(profile => {
+                            const uid = profile.userId; 
+                            
+                            // 拼接微軟 Bookings 網址與自訂欄位 ID
+                            const finalBookingUrl = BASE_BOOKING_URL + "&" + CUSTOM_FIELD_ID + "=" + encodeURIComponent(uid);
+                            
+                            // 直接執行自動跳轉
+                            window.location.href = finalBookingUrl;
+                        })
+                        .catch(err => {
+                            alert("讀取 LINE 帳號失敗，請重新從官方帳號點選。");
+                            console.error(err);
+                        });
+                })
+                .catch(err => {
+                    console.error("LIFF 系統初始化失敗", err);
+                });
+        }
+
+        // 確保網頁載入後立即執行
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在前往預約系統...</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; color: #333; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .container { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader" style="margin: 0 auto 15px;"></div>
+        <h2>正在連接 LINE 帳號...</h2>
+        <p>請稍候，即將為您導向預約頁面</p>
+    </div>
+
+    <script>
+        // ======= 請修改這裡的設定 =======
+        const MY_LIFF_ID = "2010400798-bwky55Rb"; // 你的 LIFF ID
+        const BOOKING_URL = "https://outlook.office365.com/owa/calendar/你的Bookings頁面網址"; // 你的 Microsoft Bookings 完整預約網址
+        // =====================================
+
+        function initializeLiff() {
+            liff.init({ liffId: MY_LIFF_ID })
+                .then(() => {
+                    // 檢查使用者是否在 LINE 內登入
+                    if (!liff.isLoggedIn()) {
+                        liff.login(); // 未登入則強制觸發 LINE 登入畫面
+                    } else {
+                        // 成功登入，開始撈取個人資料
+                        liff.getProfile()
+                            .then(profile => {
+                                const uid = profile.userId; // 這裡就成功撈到 UID 了！
+                                
+                                // 關鍵動作：將 UID 當作參數，黏在 Microsoft Bookings 網址後面
+                                // 轉寄過去的網址會變成：https://outlook.office365.com/.../calendar?uid=U1234567...
+                                const finalBookingUrl = BOOKING_URL + (BOOKING_URL.includes('?') ? '&' : '?') + 'uid=' + uid;
+                                
+                                // 強制網頁跳轉到 Microsoft Bookings
+                                window.location.href = finalBookingUrl;
+                            })
+                            .catch(err => {
+                                alert("撈取資料失敗：" + err);
+                            });
+                    }
+                })
+                .catch(err => {
+                    console.error("LIFF 初始化失敗", err);
+                });
+        }
+
+        // 網頁載入完成後執行
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>
